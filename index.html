@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elite Corp — DevOps Engineering Division</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:wght@400;700&family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --navy:         #0A1628;
+      --navy-mid:     #112140;
+      --navy-card:    #0E1C35;
+      --royal:        #1B3A8C;
+      --royal-light:  #2A4DA8;
+      --royal-glow:   rgba(27, 58, 140, 0.35);
+      --gold:         #C9A84C;
+      --gold-light:   #E8C97A;
+      --gold-whisper: rgba(201, 168, 76, 0.10);
+      --gold-border:  rgba(201, 168, 76, 0.22);
+      --white:        #F0F4FF;
+      --white-dim:    rgba(240, 244, 255, 0.60);
+      --white-faint:  rgba(240, 244, 255, 0.25);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--navy);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ===========================
+       HERO / MASTHEAD
+    =========================== */
+    header {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 100px 40px 140px;
+      overflow: hidden;
+    }
+
+    /* Top gold rule */
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, transparent 100%);
+    }
+
+    /* Ambient orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(100px);
+      animation: breathe 8s ease-in-out infinite;
+    }
+
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(27, 58, 140, 0.5) 0%, transparent 70%);
+      top: -200px; left: -200px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 450px; height: 450px;
+      background: radial-gradient(circle, rgba(201, 168, 76, 0.12) 0%, transparent 70%);
+      bottom: 0; right: -100px;
+      animation-delay: -4s;
+    }
+
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(27, 58, 140, 0.25) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -2s;
+    }
+
+    /* Edition stamp (top-left) */
+    .edition-stamp {
+      position: absolute;
+      top: 32px; left: 40px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.35em;
+      color: var(--white-faint);
+      text-transform: uppercase;
+    }
+
+    /* Division stamp (top-right) */
+    .division-stamp {
+      position: absolute;
+      top: 32px; right: 40px;
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.35em;
+      color: var(--gold);
+      text-transform: uppercase;
+      border: 1px solid var(--gold-border);
+      padding: 4px 12px;
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards 2.2s;
+    }
+
+    .eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.5em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 36px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.4s;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 0.7s;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 .corp {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    h1 .devops-line {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.75rem, 1.8vw, 1.1rem);
+      font-weight: 400;
+      font-style: normal;
+      color: var(--white-dim);
+      letter-spacing: 0.25em;
+      margin-top: 18px;
+      text-transform: uppercase;
+    }
+
+    /* Gold horizontal rule (animated) */
+    .gold-rule {
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+      margin: 52px auto;
+      animation: expandRule 1.4s cubic-bezier(0.23, 1, 0.32, 1) forwards 1.3s;
+    }
+
+    /* Terminal preview line */
+    .terminal-line {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--gold-light);
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 1.6s;
+    }
+
+    .terminal-line .prompt { color: var(--gold); margin-right: 4px; }
+    .terminal-line .cmd { color: var(--white-dim); }
+
+    .cursor {
+      display: inline-block;
+      width: 7px; height: 14px;
+      background: var(--gold);
+      margin-left: 3px;
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position: absolute;
+      bottom: 44px; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards 2.4s;
+    }
+
+    .scroll-cue p {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      color: var(--white-faint);
+      text-transform: uppercase;
+    }
+
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2.2s ease-in-out infinite;
+    }
+
+    /* ===========================
+       MAIN CONTENT
+    =========================== */
+    main {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 80px 40px 120px;
+    }
+
+    .section-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .section-eyebrow span {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.5em;
+      color: var(--gold);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .section-eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold-border), transparent);
+    }
+
+    /* ===========================
+       BIO CARD
+    =========================== */
+    .bio-section { margin-bottom: 110px; }
+
+    .bio-card {
+      background: var(--navy-card);
+      border: 1px solid var(--gold-border);
+      border-left: 3px solid var(--gold);
+      padding: 56px 52px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Corner triangle */
+    .bio-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 90px; height: 90px;
+      background: linear-gradient(135deg, transparent 50%, rgba(27, 58, 140, 0.25) 50%);
+    }
+
+    /* Classified badge */
+    .classified-badge {
+      position: absolute;
+      top: 24px; right: 28px;
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.45em;
+      color: var(--royal-light);
+      border: 1px solid var(--royal-light);
+      padding: 4px 10px;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    /* Vertical text watermark */
+    .bio-watermark {
+      position: absolute;
+      right: -28px; top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-family: 'Playfair Display', serif;
+      font-size: 60px;
+      font-weight: 900;
+      font-style: italic;
+      color: rgba(201, 168, 76, 0.04);
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .bio-id-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 24px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .bio-name {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      line-height: 1;
+      color: var(--white);
+    }
+
+    .bio-id {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--white-faint);
+      margin-bottom: 4px;
+    }
+
+    .bio-role {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+
+    .bio-text {
+      font-size: 14.5px;
+      line-height: 1.9;
+      color: var(--white-dim);
+      max-width: 700px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .bio-text strong { color: var(--white); font-weight: 600; }
+    .bio-text em { color: var(--gold-light); font-style: italic; }
+
+    /* Stats row */
+    .bio-stats {
+      display: flex;
+      gap: 0;
+      margin-top: 48px;
+      padding-top: 36px;
+      border-top: 1px solid var(--gold-border);
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      flex: 1;
+      min-width: 120px;
+      padding: 0 28px 0 0;
+      position: relative;
+    }
+
+    .stat + .stat {
+      padding-left: 28px;
+      border-left: 1px solid var(--gold-border);
+    }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.28em;
+      color: var(--white-faint);
+      text-transform: uppercase;
+      line-height: 1.5;
+    }
+
+    /* ===========================
+       TOOL CARDS
+    =========================== */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .tool-card {
+      background: var(--navy-card);
+      border: 1px solid var(--gold-border);
+      padding: 40px 32px 36px;
+      position: relative;
+      cursor: default;
+      transition:
+        border-color 0.35s ease,
+        box-shadow 0.4s ease,
+        transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      transform-style: preserve-3d;
+      overflow: hidden;
+    }
+
+    .tool-card:hover {
+      border-color: var(--gold);
+      box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.45),
+        0 0 32px rgba(201, 168, 76, 0.08),
+        inset 0 0 0 1px rgba(201, 168, 76, 0.08);
+    }
+
+    /* Gradient sheen */
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 55%, rgba(27, 58, 140, 0.15));
+      pointer-events: none;
+    }
+
+    /* Bottom accent line */
+    .tool-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--royal), var(--gold));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .tool-card:hover::after { transform: scaleX(1); }
+
+    .tool-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      color: var(--white-faint);
+      margin-bottom: 28px;
+    }
+
+    .tool-bar {
+      width: 32px; height: 2px;
+      background: var(--gold);
+      margin-bottom: 22px;
+      transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .tool-card:hover .tool-bar { width: 56px; }
+
+    .tool-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.7rem, 3vw, 2.3rem);
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+
+    .tool-category {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.35em;
+      color: var(--royal-light);
+      background: rgba(27, 58, 140, 0.22);
+      padding: 4px 10px;
+      margin-bottom: 22px;
+      text-transform: uppercase;
+    }
+
+    .tool-desc {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--white-dim);
+    }
+
+    /* Skill bar */
+    .skill-track {
+      margin-top: 32px;
+      height: 2px;
+      background: rgba(201, 168, 76, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--royal-light), var(--gold-light));
+      transition: width 1.6s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .skill-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .skill-meta span {
+      font-family: 'Space Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.25em;
+      color: var(--white-faint);
+    }
+
+    .skill-meta .skill-pct { color: var(--gold); }
+
+    /* ===========================
+       FOOTER
+    =========================== */
+    footer {
+      border-top: 1px solid var(--gold-border);
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 40px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-wordmark {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 1.15rem;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-wordmark .elite { color: var(--gold); font-style: italic; }
+    .footer-wordmark .corp { color: var(--white-dim); font-weight: 400; }
+
+    .footer-copy {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: var(--white-faint);
+      text-align: center;
+    }
+
+    .footer-status {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      color: var(--gold-light);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      background: #22C55E;
+      border-radius: 50%;
+      animation: pingPulse 2s ease infinite;
+    }
+
+    /* ===========================
+       KEYFRAMES
+    =========================== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes expandRule {
+      to { width: 260px; }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1);   opacity: 1; }
+      50%       { transform: scale(1.1); opacity: 0.75; }
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50%       { opacity: 1;   transform: scaleY(1.15); }
+    }
+
+    @keyframes pingPulse {
+      0%   { box-shadow: 0 0 0 0   rgba(34, 197, 94, 0.5); }
+      70%  { box-shadow: 0 0 0 7px rgba(34, 197, 94, 0); }
+      100% { box-shadow: 0 0 0 0   rgba(34, 197, 94, 0); }
+    }
+
+    /* ===========================
+       RESPONSIVE
+    =========================== */
+    @media (max-width: 900px) {
+      .tools-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      main, footer { padding-left: 24px; padding-right: 24px; }
+      .bio-card { padding: 36px 28px; }
+      .bio-stats { flex-direction: column; gap: 24px; }
+      .stat + .stat { border-left: none; border-top: 1px solid var(--gold-border); padding-left: 0; padding-top: 20px; }
+      .edition-stamp, .division-stamp { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======== HERO ======== -->
+  <header>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <p class="edition-stamp">EC/DEV-OPS &nbsp;&bull;&nbsp; Vol. 01 &nbsp;&bull;&nbsp; 2026</p>
+    <div class="division-stamp">Clearance: Alpha</div>
+
+    <p class="eyebrow">Elite Corp &mdash; Division Profile &mdash; 2026</p>
+
+    <h1>
+      <span class="corp">Elite</span> Corp
+      <span class="devops-line">DevOps Engineering Division</span>
+    </h1>
+
+    <div class="gold-rule"></div>
+
+    <p class="terminal-line">
+      <span class="prompt">$</span>
+      <span class="cmd">load_engineer --profile=senior --clearance=alpha --status=active</span>
+      <span class="cursor"></span>
+    </p>
+
+    <div class="scroll-cue">
+      <p>Scroll</p>
+      <div class="scroll-line"></div>
+    </div>
+  </header>
+
+  <!-- ======== MAIN ======== -->
+  <main>
+
+    <!-- BIO -->
+    <section class="bio-section">
+      <div class="section-eyebrow">
+        <span>Engineer Profile &nbsp;/&nbsp; Clearance Level Alpha</span>
+      </div>
+
+      <div class="bio-card">
+        <span class="classified-badge">Classified</span>
+        <div class="bio-watermark">ELITE CORP</div>
+
+        <div class="bio-id-row">
+          <div>
+            <p class="bio-id">ID: EC-DVOPS-001</p>
+            <h2 class="bio-name">Name goes here</h2>
+          </div>
+        </div>
+
+        <p class="bio-role">DevOps Engineer &nbsp;&bull;&nbsp; Full-Stack Developer &nbsp;&bull;&nbsp; Systems Architect</p>
+
+        <p class="bio-text">
+          Self-taught. Self-deployed. <strong>No degree, no bootcamp</strong> — just obsessive iteration and a refusal to ship broken things.
+          Operating out of <strong>Port Harcourt, Nigeria</strong>, Name builds systems that don't break and pipelines that don't beg.
+          His approach is simple: <em>move deliberately, commit cleanly, and never let a dependency become a liability.</em>
+          From Android apps to web platforms to full automation pipelines, every line he writes has one job — make the machine
+          do the work so the human doesn't have to. He doesn't celebrate uptime. He expects it.
+        </p>
+
+        <div class="bio-stats">
+          <div class="stat">
+            <p class="stat-num">3+</p>
+            <p class="stat-label">Years in<br>Production</p>
+          </div>
+          <div class="stat">
+            <p class="stat-num">0</p>
+            <p class="stat-label">Bugs in prod<br>(officially)</p>
+          </div>
+          <div class="stat">
+            <p class="stat-num">∞</p>
+            <p class="stat-label">Iterations<br>until clean</p>
+          </div>
+          <div class="stat">
+            <p class="stat-num">100%</p>
+            <p class="stat-label">Uptime<br>mentality</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOOLSTACK -->
+    <section>
+      <div class="section-eyebrow">
+        <span>Active Arsenal &nbsp;/&nbsp; The Stack — SS 2026</span>
+      </div>
+
+      <div class="tools-grid">
+
+        <!-- Git -->
+        <div class="tool-card" data-fill="90">
+          <p class="tool-num">TOOL_01</p>
+          <div class="tool-bar"></div>
+          <h3 class="tool-name">Git</h3>
+          <span class="tool-category">Version Control</span>
+          <p class="tool-desc">
+            The spine of every build. Branching discipline, atomic commits, and a
+            history clean enough to read like documentation. When production breaks,
+            git bisect finds the culprit in under two minutes. Nothing ships without it.
+          </p>
+          <div class="skill-track">
+            <div class="skill-fill"></div>
+          </div>
+          <div class="skill-meta">
+            <span>Proficiency</span>
+            <span class="skill-pct">90%</span>
+          </div>
+        </div>
+
+        <!-- GitHub -->
+        <div class="tool-card" data-fill="85">
+          <p class="tool-num">TOOL_02</p>
+          <div class="tool-bar"></div>
+          <h3 class="tool-name">GitHub</h3>
+          <span class="tool-category">Collaboration &middot; CI/CD</span>
+          <p class="tool-desc">
+            Where code becomes infrastructure. Pull requests, Actions pipelines,
+            protected branches, and project boards — the full operational layer.
+            Remote-first, async-native, zero-friction collaboration at any timezone.
+          </p>
+          <div class="skill-track">
+            <div class="skill-fill"></div>
+          </div>
+          <div class="skill-meta">
+            <span>Proficiency</span>
+            <span class="skill-pct">85%</span>
+          </div>
+        </div>
+
+        <!-- HTML/CSS -->
+        <div class="tool-card" data-fill="93">
+          <p class="tool-num">TOOL_03</p>
+          <div class="tool-bar"></div>
+          <h3 class="tool-name">HTML/<wbr>CSS</h3>
+          <span class="tool-category">Interface &middot; Markup</span>
+          <p class="tool-desc">
+            The first line of every product a user ever touches. Semantic structure,
+            responsive layouts, and animations that earn their render budget.
+            Because a pipeline is only as good as the interface it powers.
+          </p>
+          <div class="skill-track">
+            <div class="skill-fill"></div>
+          </div>
+          <div class="skill-meta">
+            <span>Proficiency</span>
+            <span class="skill-pct">93%</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======== FOOTER ======== -->
+  <footer>
+    <div class="footer-wordmark">
+      <span class="elite">Elite</span><span class="corp">Corp</span>
+    </div>
+    <p class="footer-copy">
+      &copy; 2026 Elite Corp &mdash; DevOps Engineering Division &mdash; All systems nominal.
+    </p>
+    <div class="footer-status">
+      <div class="status-dot"></div>
+      Systems online
+    </div>
+  </footer>
+
+  <!-- ======== SCRIPTS ======== -->
+  <script>
+    // Animate skill bars on scroll into view
+    const skillObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const card = entry.target;
+        const fill = card.querySelector('.skill-fill');
+        const target = card.dataset.fill + '%';
+        setTimeout(() => { fill.style.width = target; }, 180);
+        skillObserver.unobserve(card);
+      });
+    }, { threshold: 0.25 });
+
+    document.querySelectorAll('.tool-card').forEach(c => skillObserver.observe(c));
+
+    // 3D tilt on tool cards
+    document.querySelectorAll('.tool-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width  - 0.5;
+        const y = (e.clientY - r.top)  / r.height - 0.5;
+        card.style.transform =
+          `translateY(-10px) rotateX(${-y * 9}deg) rotateY(${x * 9}deg)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+
+    // Typewriter for terminal line
+    const termLine = document.querySelector('.terminal-line .cmd');
+    const fullText = termLine.textContent;
+    termLine.textContent = '';
+    let idx = 0;
+
+    function typeNext() {
+      if (idx <= fullText.length) {
+        termLine.textContent = fullText.slice(0, idx);
+        idx++;
+        setTimeout(typeNext, 38);
+      }
+    }
+
+    setTimeout(typeNext, 1700);
+  </script>
+</body>
+</html>
