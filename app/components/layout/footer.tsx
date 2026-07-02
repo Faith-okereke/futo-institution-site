@@ -1,7 +1,6 @@
 import { Globe, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { GoogleMapsEmbed } from "@next/third-parties/google";
 
 const Footer = () => {
   const footerLinks = [
@@ -97,13 +96,14 @@ const Footer = () => {
         <div>
           <p className=" footer-heading">campus location</p>
           <div className="mt-4 overflow-hidden rounded-md">
-            <GoogleMapsEmbed
-              apiKey={process.env.GOOGLE_MAPS_API_KEY!}
-              mode="place"
-              q="Federal University of Technology Owerri"
-              height={200}
-              width="100%"
-              style="border:0; filter: grayscale(100%) invert(92%) contrast(83%);"
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.109319187688!2d6.981575473663144!3d5.4003122351983475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10425c4a1787546f%3A0x886a2c3c3df5fe44!2sFUTO%20Main%20Gate!5e0!3m2!1sen!2sng!4v1783031513610!5m2!1sen!2sng"
+              width="300"
+              height="250"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
         </div>
