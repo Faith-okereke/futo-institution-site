@@ -1,4 +1,5 @@
 import { Document } from "@contentful/rich-text-types";
+export type ContentfulRichTextDocument = Document;
 export type ContentfulRichTextNode = {
     nodeType: string;
     value?: string;

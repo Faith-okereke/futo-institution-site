@@ -1,6 +1,7 @@
 import { news } from "../data/site";
 import {
   BlogPost,
+  Category,
   ContentfulRichTextDocument,
   ContentfulRichTextNode,
 } from "../types/content";
@@ -14,7 +15,7 @@ export const fallbackBlogPosts: BlogPost[] = news.map((item) => ({
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, ""),
-  category: item.category,
+  category: [item.category as Category],
   excerpt: item.excerpt,
   body: `${item.excerpt}\n\n${fallbackBody}`,
   datePublished: item.date,

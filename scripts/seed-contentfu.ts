@@ -149,7 +149,7 @@ async function createCoverImage(
 }
 
 async function seedPosts() {
-  const space = await client.getSpace(CONTENTFUL_SPACE_ID);
+  const space = await client.getSpace(CONTENTFUL_SPACE_ID!);
   const environment = await space.getEnvironment(CONTENTFUL_ENVIRONMENT_ID);
 
   for (const post of posts) {
