@@ -1,15 +1,18 @@
 import Image from "next/image";
 import {
   CalendarDays,
-  ChevronLeft,
-  ChevronRight,
   Clock3,
   Filter,
   MapPin,
 } from "lucide-react";
-import { events } from "../data/site";
+import { getEvents } from "../lib/contentful-event";
+import EventCards from "../components/events/EventCards";
+import EventsCalendarPanel from "../components/events/EventsCalendarPanel";
 
-export default function EventsPage() {
+
+export const revalidate = 60
+export default async function EventsPage() {
+  const events = await getEvents();
   const [featured, ...otherEvents] = events;
 
   return (
@@ -27,10 +30,10 @@ export default function EventsPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <button className="inline-flex items-center gap-2 border border-[var(--line)] bg-[var(--soft)] px-5 py-3 text-sm font-bold">
+            <button className="inline-flex items-center gap-2 border border-[var(--line)] bg-[var(--soft)] px-5 py-3 text-sm font-bold cursor-pointer">
               <Filter size={17} /> Filter by type
             </button>
-            <button className="inline-flex items-center gap-2 border border-[var(--line)] bg-[var(--soft)] px-5 py-3 text-sm font-bold">
+            <button className="inline-flex items-center gap-2 border border-[var(--line)] bg-[var(--soft)] px-5 py-3 text-sm font-bold cursor-pointer">
               <CalendarDays size={17} /> July 2026
             </button>
           </div>
@@ -73,7 +76,9 @@ export default function EventsPage() {
             <div className="mt-8 grid gap-3 text-sm text-[var(--muted)]">
               <span className="inline-flex items-center gap-2">
                 <Clock3 size={16} className="text-[var(--green)]" />
-                {featured.time}
+                {featured.time
+                  ? new Date(featured.time).toLocaleDateString()
+                  : "Time not specified"}
               </span>
               <span className="inline-flex items-center gap-2">
                 <MapPin size={16} className="text-[var(--green)]" />
@@ -112,101 +117,10 @@ export default function EventsPage() {
           </div>
         </aside>
 
-        {otherEvents.map((event) => (
-          <article
-            className="group flex flex-col border border-[var(--line)] bg-white transition hover:-translate-y-1 hover:border-[var(--green)] hover:shadow-[0_16px_40px_rgba(28,27,27,0.08)] md:col-span-4"
-            key={event.title}
-          >
-            <div className="relative h-52 overflow-hidden">
-              <Image
-                src={event.image}
-                alt=""
-                fill
-                className="object-cover transition duration-700 group-hover:scale-105"
-                sizes="(min-width: 768px) 33vw, 100vw"
-              />
-            </div>
-            <div className="flex flex-1 flex-col p-6">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <span className="rounded-full bg-[var(--soft)] px-3 py-1 text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
-                  {event.type}
-                </span>
-                <span className="text-sm font-bold uppercase text-[var(--green)]">
-                  {event.month} {event.day}
-                </span>
-              </div>
-              <h3 className="font-serif text-2xl font-semibold leading-tight">
-                {event.title}
-              </h3>
-              <p className="mt-4 flex-1 leading-7 text-[var(--muted)]">
-                {event.location} at {event.time}. Follow official channels for
-                attendance guidance and faculty-specific notices.
-              </p>
-              <button className="mt-8 border border-[var(--green)] px-5 py-3 text-sm font-bold uppercase text-[var(--green)] transition hover:bg-[#b2f1bf]">
-                View details
-              </button>
-            </div>
-          </article>
-        ))}
+        <EventCards events={otherEvents} />
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-5 px-4 pb-20 sm:px-8 md:grid-cols-3 lg:px-16">
-        <div className="border border-[var(--line)] bg-[var(--soft)] p-6 md:col-span-2">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="font-serif text-3xl font-semibold">
-              Event Calendar
-            </h2>
-            <div className="flex gap-3 text-[var(--muted)]">
-              <ChevronLeft />
-              <ChevronRight />
-            </div>
-          </div>
-          <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-              <div className="py-2" key={day}>
-                {day}
-              </div>
-            ))}
-            {Array.from({ length: 21 }, (_, index) => {
-              const date = index + 1;
-              const active = events.some((event) => Number(event.day) === date);
-              return (
-                <div
-                  className={`flex h-16 items-start justify-start border border-[var(--line)] p-2 text-left text-sm font-semibold ${
-                    active ? "border-[var(--green)] bg-[#b2f1bf]/35" : "bg-white"
-                  }`}
-                  key={date}
-                >
-                  {date}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="flex flex-col justify-center bg-[var(--footer)] p-8">
-          <h2 className="font-serif text-3xl font-semibold text-[var(--green)]">
-            Newsletter
-          </h2>
-          <p className="mt-4 leading-7 text-[var(--muted)]">
-            Stay informed about academic deadlines and university symposiums
-            delivered to your inbox.
-          </p>
-          <form className="mt-8 grid gap-4">
-            <label className="grid gap-2 text-xs font-bold uppercase tracking-[0.12em]">
-              Institutional email
-              <input
-                className="border border-[var(--outline)] bg-white p-3 text-base font-normal normal-case tracking-normal outline-none focus:border-[var(--green)]"
-                placeholder="student.name@futo.edu.ng"
-                type="email"
-              />
-            </label>
-            <button className="btn-primary rounded-none uppercase">
-              Subscribe now
-            </button>
-          </form>
-        </div>
-      </section>
+      <EventsCalendarPanel events={otherEvents} />
     </div>
   );
 }

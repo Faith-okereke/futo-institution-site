@@ -60,7 +60,7 @@ const Navbar = () => {
 
         <button
           type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded border border-[var(--line)] text-[var(--ink)] lg:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded border border-[var(--line)] text-[var(--ink)] lg:hidden cursor-pointer"
           aria-label={open ? "Close navigation" : "Open navigation"}
           onClick={() => setOpen((value) => !value)}
         >

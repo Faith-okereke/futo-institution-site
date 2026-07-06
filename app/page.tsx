@@ -7,10 +7,14 @@ import {
   Clock3,
   MapPin,
 } from "lucide-react";
-import { events, schools, stats } from "./data/site";
+import { schools, stats } from "./data/site";
 import LatestNews from "./components/home/latest-news";
+import { getEvents } from "./lib/contentful-event";
 
-export default function Home() {
+export const revalidate = 60;
+
+const Home = async () => {
+  const events = await getEvents();
   const spotlight = schools[3];
 
   return (
@@ -38,7 +42,10 @@ export default function Home() {
             and sustainable development.
           </p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <Link className="btn-primary rounded-none uppercase" href="/schools">
+            <Link
+              className="btn-primary rounded-none uppercase"
+              href="/schools"
+            >
               Explore programs <ArrowRight size={18} />
             </Link>
             <Link
@@ -96,7 +103,10 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <Link className="btn-primary mt-10 rounded-none uppercase" href="/schools">
+            <Link
+              className="btn-primary mt-10 rounded-none uppercase"
+              href="/schools"
+            >
               Learn more
             </Link>
           </div>
@@ -134,7 +144,7 @@ export default function Home() {
           <div className="grid gap-5 lg:col-span-8">
             {events.slice(0, 3).map((event, index) => (
               <article
-                className="group flex gap-5 border border-[var(--line)] bg-white p-5 transition hover:border-[var(--green)]"
+                className="group flex gap-5 border border-[var(--line)] bg-white p-5 transition hover:border-[var(--green)] cursor-pointer"
                 key={event.title}
               >
                 <div
@@ -160,7 +170,10 @@ export default function Home() {
                   </h3>
                   <div className="mt-3 flex flex-wrap gap-5 text-sm text-[var(--muted)]">
                     <span className="inline-flex items-center gap-2">
-                      <Clock3 size={16} /> {event.time}
+                      <Clock3 size={16} />{" "}
+                      {event.time
+                        ? new Date(event.time).toLocaleDateString()
+                        : "Time not specified"}
                     </span>
                     <span className="inline-flex items-center gap-2">
                       <MapPin size={16} /> {event.location}
@@ -180,10 +193,14 @@ export default function Home() {
             Ready to study in a university shaped by technology?
           </h2>
         </div>
-        <Link className="btn-primary w-fit rounded-none uppercase" href="/admissions">
+        <Link
+          className="btn-primary w-fit rounded-none uppercase"
+          href="/admissions"
+        >
           Start admission journey <BookOpen size={18} />
         </Link>
       </section>
     </div>
   );
-}
+};
+export default Home;
