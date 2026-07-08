@@ -5,13 +5,13 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import Image from "next/image";
 
-import { getBlogPostBySlug, getBlogPosts } from "../../lib/contentful-blog";
+import { getBlogPostBySlug, getBlogPosts } from "../../../lib/contentful-blog";
 import { ArrowLeftIcon } from "lucide-react";
 
 interface BlogPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 function renderRichText(value?: string | Document) {
@@ -37,7 +37,8 @@ function formatDate(date: string) {
 export async function generateMetadata({
   params,
 }: BlogPageProps): Promise<Metadata> {
-  const post = await getBlogPostBySlug(params.id);
+  const { id } = await params;
+  const post = await getBlogPostBySlug(id);
 
   if (!post) {
     return {
@@ -52,20 +53,21 @@ export async function generateMetadata({
 }
 
 export default async function BlogPostPage({ params }: BlogPageProps) {
-  const post = await getBlogPostBySlug(params.id);
+  const { id } = await params;
+  const post = await getBlogPostBySlug(id);
 
   if (!post) {
     notFound();
   }
 
   return (
-    <div className="bg-[var(--surface)]">
+    <div className="bg-(--surface)">
       {/* Masthead / back nav */}
       <section className="mx-auto max-w-5xl px-5 pt-16 sm:px-8 lg:px-16">
-        <div className="flex items-center justify-between border-b border-[var(--ink)]/10 pb-6">
+        <div className="flex items-center justify-between border-b border-(--ink)/10 pb-6">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--ink)] transition-colors hover:text-[var(--green)]"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-(--ink) transition-colors hover:text-(--green)"
           >
             <span aria-hidden>
               <ArrowLeftIcon />
@@ -83,18 +85,18 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
             {renderRichText(post.title)}
           </h1>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-[var(--ink)]/10 pt-5 text-sm">
-            <span className="font-semibold uppercase tracking-wide text-[var(--ink)]">
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-(--ink)/10 pt-5 text-sm">
+            <span className="font-semibold uppercase tracking-wide text-(--ink)">
               {formatDate(post.datePublished)}
             </span>
             {post.category.length ? (
               <>
-                <span className="text-[var(--ink)]/20">|</span>
+                <span className="text-(--ink)/20">|</span>
                 <span className="flex flex-wrap gap-2">
                   {post.category.map((cat) => (
                     <span
                       key={cat}
-                      className="font-semibold uppercase tracking-wide text-[var(--green)]"
+                      className="font-semibold uppercase tracking-wide text-(--green)"
                     >
                       {cat}
                     </span>
@@ -127,23 +129,23 @@ export default async function BlogPostPage({ params }: BlogPageProps) {
       {/* Body copy */}
       <section className="mx-auto max-w-5xl px-5 py-16 sm:px-8 lg:px-16">
         <div
-          className="prose prose-lg mx-auto max-w-3xl text-[var(--ink)]
+          className="prose prose-lg mx-auto max-w-3xl text-(--ink)
             prose-headings:font-serif prose-headings:font-bold
-            prose-p:leading-8 prose-p:text-[var(--ink)]/90
-            prose-a:text-[var(--green)] prose-a:no-underline hover:prose-a:underline
+            prose-p:leading-8 prose-p:text-(--ink)/90
+            prose-a:text-(--green) prose-a:no-underline hover:prose-a:underline
             prose-img:rounded-none
             first:prose-p:first-letter:float-left first:prose-p:first-letter:mr-2
             first:prose-p:first-letter:font-serif first:prose-p:first-letter:text-6xl
             first:prose-p:first-letter:font-bold first:prose-p:first-letter:leading-[0.85]
-            first:prose-p:first-letter:text-[var(--green)]"
+            first:prose-p:first-letter:text-(--green)"
         >
           {renderRichText(post.body)}
         </div>
 
-        <div className="mx-auto mt-16 max-w-3xl border-t border-[var(--ink)]/10 pt-8">
+        <div className="mx-auto mt-16 max-w-3xl border-t border-(--ink)/10 pt-8">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--ink)] transition-colors hover:text-[var(--green)]"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-(--ink) transition-colors hover:text-(--green)"
           >
             <span aria-hidden>←</span> Back to all news
           </Link>

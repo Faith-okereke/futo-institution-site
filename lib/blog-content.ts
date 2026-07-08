@@ -1,10 +1,10 @@
-import { news } from "../data/site";
+import { news } from "../app/data/site";
 import {
   BlogPost,
   Category,
   ContentfulRichTextDocument,
   ContentfulRichTextNode,
-} from "../types/content";
+} from "../app/types/content";
 
 const fallbackBody =
   "FUTO continues to connect rigorous teaching, practical research, and public service across its academic community. This update reflects the university's commitment to applied technology, student success, and institutional excellence.";

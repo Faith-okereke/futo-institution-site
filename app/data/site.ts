@@ -3,7 +3,7 @@ import { Category } from "../types/content";
 export const navItems = [
   { label: "Home", href: "/" },
   { label: "Blog", href: "/blog" },
-  { label: "Research", href: "/research" },
+  { label: "Staff", href: "/staff" },
   { label: "Schools", href: "/schools" },
   { label: "About", href: "/about" },
   { label: "Events", href: "/events" },

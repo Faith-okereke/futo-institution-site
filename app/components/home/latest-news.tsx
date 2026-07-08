@@ -1,10 +1,9 @@
-import { getBlogPosts } from "@/app/lib/contentful-blog";
+import { getBlogPosts } from "@/lib/contentful-blog";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-export const revalidate = 300;
 const LatestNews = async () => {
   const news = await getBlogPosts();
   return (

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import type { Document } from "@contentful/rich-text-types";
 import Link from "next/link";
-import { getBlogPosts } from "../lib/contentful-blog";
+import { getBlogPosts } from "../../lib/contentful-blog";
 
 function renderRichText(value?: string | Document) {
   if (!value) {

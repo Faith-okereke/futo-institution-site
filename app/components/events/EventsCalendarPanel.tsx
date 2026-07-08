@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { Event } from "../../lib/contentful-event";
+import type { Event } from "../../../lib/contentful-event";
 import EventCards from "./EventCards";
 
 type Props = {
@@ -41,7 +41,9 @@ export default function EventsCalendarPanel({ events }: Props) {
   });
 
   const [selectedDate, setSelectedDate] = useState<string | null>(() => {
-    return events.some((event) => event.date.startsWith(todayIso)) ? todayIso : null;
+    return events.some((event) => event.date.startsWith(todayIso))
+      ? todayIso
+      : null;
   });
 
   const eventsByDate = useMemo(() => {
@@ -61,22 +63,25 @@ export default function EventsCalendarPanel({ events }: Props) {
   });
 
   const firstWeekday = viewDate.getUTCDay();
-  const totalDays = getDaysInMonth(viewDate.getUTCFullYear(), viewDate.getUTCMonth());
+  const totalDays = getDaysInMonth(
+    viewDate.getUTCFullYear(),
+    viewDate.getUTCMonth(),
+  );
   const cells = Array.from({ length: firstWeekday + totalDays }, (_, index) => {
     const day = index - firstWeekday + 1;
     return day > 0 ? day : null;
   });
 
   const displayedEvents = selectedDate
-    ? eventsByDate.get(selectedDate) ?? []
-    : events;
+    ? (eventsByDate.get(selectedDate) ?? [])
+    : [];
 
   const selectedTitle = selectedDate
     ? `Events on ${new Date(selectedDate).toLocaleDateString(undefined, {
         month: "long",
         day: "numeric",
       })}`
-    : "All scheduled events";
+    : "Select a date to view events";
 
   const changeMonth = (delta: number) => {
     const year = viewDate.getUTCFullYear();
@@ -87,16 +92,23 @@ export default function EventsCalendarPanel({ events }: Props) {
 
   return (
     <section className="mx-auto grid max-w-7xl gap-5 px-4 pb-20 sm:px-8 md:grid-cols-3 lg:px-16">
-      <div className="border border-[var(--line)] bg-[var(--soft)] p-6 md:col-span-2">
+      <div className="border border-(--line) bg-(--soft) p-6 md:col-span-2">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h2 className="font-serif text-3xl font-semibold">Event Calendar</h2>
-            <p className="mt-2 text-sm text-[var(--muted)]">A real month calendar with event dates highlighted.</p>
+            <h2 className="font-serif text-3xl font-semibold">
+              Event Calendar
+            </h2>
+            <p className="mt-2 text-sm text-(--muted)">
+              Event for the Academic Year 2026/2027.{" "}
+            </p>
+            <p className=" text-sm text-(--muted)">
+              Explore the calendar to discover upcoming events at FUTO.
+            </p>
           </div>
-          <div className="flex items-center gap-3 text-[var(--muted)]">
+          <div className="flex items-center gap-3 text-(--muted)">
             <button
               type="button"
-              className="rounded border border-[var(--line)] px-3 py-2 text-sm cursor-pointer hover:bg-white"
+              className="rounded border border-(--line) px-3 py-2 text-sm cursor-pointer hover:bg-white"
               onClick={() => changeMonth(-1)}
             >
               <ChevronLeft />
@@ -104,7 +116,7 @@ export default function EventsCalendarPanel({ events }: Props) {
             <div className="font-semibold">{monthName}</div>
             <button
               type="button"
-              className="rounded border border-[var(--line)] px-3 py-2 text-sm cursor-pointer hover:bg-white"
+              className="rounded border border-(--line) px-3 py-2 text-sm cursor-pointer hover:bg-white"
               onClick={() => changeMonth(1)}
             >
               <ChevronRight />
@@ -112,7 +124,7 @@ export default function EventsCalendarPanel({ events }: Props) {
           </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
+        <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold uppercase tracking-[0.08em] text-(--muted)">
           {dayNames.map((day) => (
             <div className="py-2" key={day}>
               {day}
@@ -120,10 +132,17 @@ export default function EventsCalendarPanel({ events }: Props) {
           ))}
           {cells.map((day, index) => {
             if (day === null) {
-              return <div key={index} className="h-16 border border-[var(--line)] bg-white" />;
+              return (
+                <div
+                  key={index}
+                  className="h-16 border border-(--line) bg-white"
+                />
+              );
             }
 
-            const date = new Date(Date.UTC(viewDate.getUTCFullYear(), viewDate.getUTCMonth(), day));
+            const date = new Date(
+              Date.UTC(viewDate.getUTCFullYear(), viewDate.getUTCMonth(), day),
+            );
             const isoDate = toIsoDateString(date);
             const hasEvent = eventsByDate.has(isoDate);
             const selected = isoDate === selectedDate;
@@ -134,11 +153,11 @@ export default function EventsCalendarPanel({ events }: Props) {
                 type="button"
                 className={`flex h-16 w-full items-start justify-start border p-2 text-left text-sm font-semibold transition ${
                   selected
-                    ? "border-[var(--green)] bg-[var(--green)]/15 text-[var(--green)]"
+                    ? "border-(--green)] bg-(--green)/15 text-(--green)"
                     : hasEvent
-                    ? "border-[var(--green)] bg-[#b2f1bf]/35"
-                    : "border-[var(--line)] bg-white"
-                } cursor-pointer hover:bg-[var(--soft)]`}
+                      ? "border-(--green) bg-[#b2f1bf]/35"
+                      : "border-(--line) bg-white"
+                } cursor-pointer hover:bg-(--soft)`}
                 onClick={() => setSelectedDate(selected ? null : isoDate)}
               >
                 {day}
@@ -148,13 +167,16 @@ export default function EventsCalendarPanel({ events }: Props) {
         </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-[var(--ink)]">
-            {selectedTitle} · {displayedEvents.length} event{displayedEvents.length === 1 ? "" : "s"}
+          <p className="text-sm font-semibold text-(--ink)">
+            {selectedTitle}
+            {selectedDate
+              ? ` · ${displayedEvents.length} event${displayedEvents.length === 1 ? "" : "s"}`
+              : ""}
           </p>
           {selectedDate ? (
             <button
               type="button"
-              className="text-sm font-semibold text-[var(--green)] cursor-pointer"
+              className="text-sm font-semibold text-(--green) cursor-pointer"
               onClick={() => setSelectedDate(null)}
             >
               Clear date
@@ -162,37 +184,48 @@ export default function EventsCalendarPanel({ events }: Props) {
           ) : null}
         </div>
 
-        <div className="mt-6 grid gap-5">
-          <EventCards
-            events={displayedEvents}
-            onSelectEvent={(event) => {
-              const eventDate = parseIsoDate(event.date);
-              if (eventDate) {
-                setViewDate(monthStart(eventDate.getUTCFullYear(), eventDate.getUTCMonth()));
-                setSelectedDate(toIsoDateString(eventDate));
-              }
-            }}
-          />
-        </div>
+        {selectedDate && displayedEvents.length > 0 && (
+          <div className="mt-6 grid gap-5">
+            <EventCards
+              events={displayedEvents}
+              onSelectEvent={(event) => {
+                const eventDate = parseIsoDate(event.date);
+                if (eventDate) {
+                  setViewDate(
+                    monthStart(
+                      eventDate.getUTCFullYear(),
+                      eventDate.getUTCMonth(),
+                    ),
+                  );
+                  setSelectedDate(toIsoDateString(eventDate));
+                }
+              }}
+            />
+          </div>
+        )}
       </div>
 
-      <div className="flex flex-col justify-center bg-[var(--footer)] p-8">
-        <h2 className="font-serif text-3xl font-semibold text-[var(--green)]">
+      <div className="flex flex-col justify-center bg-(--footer) p-8">
+        <h2 className="font-serif text-3xl font-semibold text-(--green)">
           Newsletter
         </h2>
-        <p className="mt-4 leading-7 text-[var(--muted)]">
-          Stay informed about academic deadlines and university symposiums delivered to your inbox.
+        <p className="mt-4 leading-7 text-(--muted)">
+          Stay informed about academic deadlines and university symposiums
+          delivered to your inbox.
         </p>
         <form className="mt-8 grid gap-4">
           <label className="grid gap-2 text-xs font-bold uppercase tracking-[0.12em]">
             Institutional email
             <input
-              className="border border-[var(--outline)] bg-white p-3 text-base font-normal normal-case tracking-normal outline-none focus:border-[var(--green)]"
+              className="border border-(--outline) bg-white p-3 text-base font-normal normal-case tracking-normal outline-none focus:border-(--green)"
               placeholder="student.name@futo.edu.ng"
               type="email"
             />
           </label>
-          <button className="btn-primary rounded-none uppercase cursor-pointer" type="submit">
+          <button
+            className="btn-primary rounded-none uppercase cursor-pointer"
+            type="submit"
+          >
             Subscribe now
           </button>
         </form>

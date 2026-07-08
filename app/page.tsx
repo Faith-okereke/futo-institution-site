@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { schools, stats } from "./data/site";
 import LatestNews from "./components/home/latest-news";
-import { getEvents } from "./lib/contentful-event";
+import { getEvents } from "../lib/contentful-event";
 
 export const revalidate = 60;
 

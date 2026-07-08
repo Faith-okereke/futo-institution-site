@@ -7,8 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "seed:courses": "tsx scripts/seed-courses.ts",
     "seed:blogs": "tsx scripts/seed-contentfu.ts",
-    "seed:events": "tsx scripts/seed-events.ts"
+    "seed:events": "tsx scripts/seed-events.ts",
+    "seed:schools": "tsx scripts/seed-schools.ts"
   },
   "dependencies": {
     "@contentful/rich-text-react-renderer": "^16.2.1",

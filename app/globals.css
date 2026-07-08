@@ -12,6 +12,8 @@
   --green-dark: #174a2a;
   --line: #dcd9d9;
   --outline: #c4c7c8;
+  --font-inter: Arial, Helvetica, sans-serif;
+  --font-playfair: Georgia, "Times New Roman", serif;
 }
 
 @theme inline {

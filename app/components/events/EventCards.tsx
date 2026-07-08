@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Clock3, MapPin, X, CalendarPlus } from "lucide-react";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-import type { Event } from "../../lib/contentful-event";
+import type { Event } from "../../../lib/contentful-event";
 
 type Props = {
   events: Event[];

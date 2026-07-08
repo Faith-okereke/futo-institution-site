@@ -24,6 +24,13 @@ export interface BlogPost {
     featured: boolean;
     coverImage: string | null;
 }
+
+export interface Course {
+  title: string;
+  slug: string;
+  courseCode: string;
+}
+
 export type ContentfulAsset = {
     fields?: {
         file?: {

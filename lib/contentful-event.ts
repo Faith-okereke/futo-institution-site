@@ -1,6 +1,7 @@
 import type { Document } from "@contentful/rich-text-types";
+import { events as fallbackEventData } from "../app/data/site";
 import { contentfulClient } from "./contentful";
-import type { ContentfulAsset } from "../types/content";
+import type { ContentfulAsset } from "../app/types/content";
 
 export type Event = {
   title: string;
@@ -31,6 +32,8 @@ type ContentfulEventEntry = {
     featured?: boolean;
   };
 };
+
+const isProductionBuild = process.env.NEXT_PHASE === "phase-production-build";
 
 function getAssetUrl(item: ContentfulEventEntry): string {
   const url = item.fields.coverImage?.fields?.file?.url;
@@ -72,11 +75,43 @@ function mapEvent(item: ContentfulEventEntry): Event {
   };
 }
 
-export async function getEvents(): Promise<Event[]> {
-  const entries = await contentfulClient.getEntries({
-    content_type: "events",
-    order: ["fields.date"],
-  });
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
-  return (entries.items as unknown as ContentfulEventEntry[]).map(mapEvent);
+const fallbackEvents: Event[] = fallbackEventData.map((event) => ({
+  title: event.title,
+  slug: slugify(event.title),
+  status: event.status,
+  date: event.date,
+  time: event.time,
+  location: event.location,
+  description: undefined,
+  coverImage: event.image,
+  featured: event.type === "Featured",
+  image: event.image,
+  type: event.type,
+  day: event.day,
+  month: event.month,
+}));
+
+export async function getEvents(): Promise<Event[]> {
+  if (!contentfulClient || isProductionBuild) {
+    return fallbackEvents;
+  }
+
+  try {
+    const entries = await contentfulClient.getEntries({
+      content_type: "events",
+      order: ["fields.date"],
+    });
+
+    return (entries.items as unknown as ContentfulEventEntry[]).map(mapEvent);
+  } catch {
+    console.warn("Using fallback events because Contentful failed.");
+    return fallbackEvents;
+  }
 }

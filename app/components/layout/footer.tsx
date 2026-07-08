@@ -14,7 +14,7 @@ const Footer = () => {
     },
     {
       label: "Faculties",
-      href: "/faculties",
+      href: "/schools",
     },
     {
       label: "Admissions",
